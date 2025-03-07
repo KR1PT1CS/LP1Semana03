@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Linq;
 
 namespace TrapAnalyzer
 {
@@ -28,19 +30,28 @@ namespace TrapAnalyzer
             // ////////// //
             // CHANGE ME! //
             // ////////// //
-            PlayerGear playergear = PlayerGear.Helmet | PlayerGear.Shield | PlayerGear.Boots;
-            foreach(PlayerGear gear in Enum.GetValues(typeof(PlayerGear)))
+            
+            /*
+             * // D e a c t i v a t e Tank r o l e
+                myRoles &= ~WoWRoles . Tank ;
+                // T o g gle ( s w i t c h ) Damage r o l e
+                myRoles ^= WoWRoles . Damage ;
+                 */
+            
+            PlayerGear playerGear = PlayerGear.Helmet | PlayerGear.Shield | PlayerGear.Boots;
+            foreach (PlayerGear gear in Enum.GetValues(typeof(PlayerGear)))
             {
-                playergear &= gear;
-                foreach (string arg in args)
+                playerGear &= gear;
+            }
+            foreach (string arg in args.ToList().Slice(1, args.ToList().Count-1))
+            {
+                PlayerGear gear = Enum.Parse<PlayerGear>(arg);
+                if (gear != PlayerGear.None)
                 {
-                    if (s == gear.ToString())
-                    {
-                        playergear ^= gear;
-                        break;
-                    }
+                    playerGear ^= gear;
                 }
             }
+            return playerGear;
         }
 
         /// <summary>
@@ -54,9 +65,19 @@ namespace TrapAnalyzer
             // ////////// //
             // CHANGE ME! //
             // ////////// //
-            
+            switch (trap)
+            {
+                case TrapType.FallingRocks:
+                    return (gear & PlayerGear.Helmet) == PlayerGear.Helmet;
+                case TrapType.SpinningBlades:
+                    return (gear & PlayerGear.Shield) == PlayerGear.Shield;
+                case TrapType.PoisonGas:
+                    return (gear & PlayerGear.Helmet) == PlayerGear.Helmet && (gear & PlayerGear.Shield) == PlayerGear.Shield;
+                case TrapType.LavaPit:
+                    return (gear & PlayerGear.Boots) == PlayerGear.Boots;
             }
-        
+            return false;
+        }
 
         /// <summary>
         /// Display information on wether the player survived the trap or not.
@@ -67,6 +88,8 @@ namespace TrapAnalyzer
             // ////////// //
             // CHANGE ME! //
             // ////////// //
+            string text = survives ? "survives" : "dies due to";
+            Console.WriteLine($"Player {text} {trap.ToString()}");
         }
     }
 }
