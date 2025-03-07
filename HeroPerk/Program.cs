@@ -7,7 +7,7 @@ namespace HeroPerk
     {
         private static void Main(string[] args)
         {
-            Console.WriteLine("Hello LP1!");
+          
             if (args.Length == 0)
             {
                 Console.WriteLine("!No perks at all!");
